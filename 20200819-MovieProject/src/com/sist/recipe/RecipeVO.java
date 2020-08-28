@@ -16,7 +16,7 @@ import java.io.Serializable;
  *   
  *   A b=new A();
  */
-public class RecipeVO implements Serializable{
+public class RecipeVO{
 	private int no;
     private String title;
     private String poster;

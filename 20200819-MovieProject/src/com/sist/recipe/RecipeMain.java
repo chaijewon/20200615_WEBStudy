@@ -7,6 +7,8 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+
+import com.sist.dao.MovieDAO;
 /*
  *  <li class="common_sp_list_li">
                 <div class="common_sp_thumb">
@@ -30,7 +32,8 @@ public class RecipeMain {
 	//RecipeDAO dao=new RecipeDAO();
 	public void recipeAllData()
 	{
-	     
+		
+	     MovieDAO dao=new MovieDAO(); 
 	     int k=1;
 	     try
 	     {
@@ -47,7 +50,7 @@ public class RecipeMain {
 	    			try
 	    			{
 		    			 RecipeVO vo=new RecipeVO();
-		    			 vo.setNo(k);
+		    			 
 		    			 vo.setTitle(title.get(j).text());
 		    			 vo.setPoster(poster.get(j).attr("src"));
 		    			 vo.setChef(chef.get(j).text());
@@ -58,8 +61,9 @@ public class RecipeMain {
 		    			 System.out.println("Poster:"+vo.getPoster());
 		    			 System.out.println("Link:"+vo.getLink());
 		    			 System.out.println("k="+k);
-		    			 //dao.recipeInsert(vo);
+		    			 dao.recipeInsert(vo);
 		    			 //recipeDetailData(vo.getLink(),k);
+		    			 Thread.sleep(50);
 		    			 k++;
 		    			 
 	    			}catch(Exception e) {e.printStackTrace();}
@@ -72,10 +76,11 @@ public class RecipeMain {
 	public ArrayList<ChefVO> chefAllData()
 	{
 		ArrayList<ChefVO> list=new ArrayList<ChefVO>();
+		MovieDAO dao=new MovieDAO();
 		try
 		{
 			int k=1;
-			for(int i=1;i<=23;i++)
+			for(int i=1;i<=25;i++)
 			{
 				// https://www.10000recipe.com/chef/chef_list.html?order=chef_no_follower&term=all&page=2
 				Document doc=Jsoup.connect("http://www.10000recipe.com/chef/chef_list.html?order=chef_no_follower&term=all&page="+i).get();
@@ -105,7 +110,8 @@ public class RecipeMain {
 						System.out.println("Mem-cont2:"+vo.getMem_cont2());
 						System.out.println("k="+k);
 						System.out.println("---------------------------------------------------------");
-						//dao.chefInsert(vo);
+						dao.chefInsert(vo);
+						Thread.sleep(100);
 					    k++;
 					}catch(Exception ex){}
 					//list.add(vo);
@@ -180,9 +186,9 @@ public class RecipeMain {
 		// TODO Auto-generated method stub
 		RecipeMain rm=new RecipeMain();
 		//rm.test();
-		rm.recipeAllData();
+		//rm.recipeAllData();
 		
-		//rm.chefAllData();
+		rm.chefAllData();
        /*try
        {
     	   File f=new File("c:\\project_data\\recipe.txt");

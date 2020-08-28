@@ -4,6 +4,8 @@ import java.util.*;
 
 import com.sist.manager.MovieVO;
 import com.sist.manager.NewsVO;
+import com.sist.recipe.ChefVO;
+import com.sist.recipe.RecipeVO;
 public class MovieDAO {
 	// 연결 
 		private Connection conn; // 오라클 연결 클래스
@@ -310,6 +312,151 @@ public class MovieDAO {
 			}
 		}
 		
+		// 레시피 저장 
+		public void recipeInsert(RecipeVO vo)
+		{
+			try
+			{
+				getConnection();
+				String sql="INSERT INTO recipe VALUES("
+					      +"(SELECT NVL(MAX(no)+1,1) FROM recipe),?,?,?,?)";
+				ps=conn.prepareStatement(sql);
+				// ?에 값을 채운다
+				ps.setString(1, vo.getTitle());
+				ps.setString(2, vo.getPoster());
+				ps.setString(3, vo.getChef());
+				ps.setString(4, vo.getLink());
+				
+				// 실행 명령
+				ps.executeUpdate();
+			}catch(Exception ex)
+			{
+				System.out.println(ex.getMessage());
+			}
+			finally { 
+				disConnection(); 
+			}
+			 
+		}
+		
+		public void chefInsert(ChefVO vo)
+		{
+			try
+			{
+				// 연결
+				getConnection();
+				// SQL
+				String sql="INSERT INTO chef VALUES(?,?,?,?,?,?)";
+				// 전송
+				ps=conn.prepareStatement(sql);
+				// ? 에 값을 채운다 
+				ps.setString(1, vo.getPoster());
+				ps.setString(2, vo.getChef());
+				ps.setString(3, vo.getMem_cont1());
+				ps.setString(4, vo.getMem_cont3());
+				ps.setString(5, vo.getMem_cont7());
+				ps.setString(6, vo.getMem_cont2());
+				// 실행 
+				ps.executeUpdate();
+			}catch(Exception ex)
+			{
+				ex.printStackTrace();
+			}
+			finally
+			{
+				disConnection();
+			}
+		}
+		
+		// 로그인 
+		/*
+		 *    목록  ===> ArrayList
+		 *    상세보기 ==> ~VO
+		 *    경우의 수 
+		 *      2개 =====> boolean
+		 *         ID중복 => boolean
+		 *      3개 이상 
+		 *         String , int 
+		 *         
+		 *         ID가 없는 경우
+		 *         PWD가 틀리다 
+		 *         로그인 
+		 *    
+		 */
+		public String isLogin(String id,String pwd)
+		{
+			String result="";
+			try
+			{
+				getConnection();
+				String sql="SELECT COUNT(*) FROM member "
+						  +"WHERE id=?"; // ID가 존재?
+				ps=conn.prepareStatement(sql);
+				ps.setString(1, id);
+				ResultSet rs=ps.executeQuery();
+				rs.next();
+				int count=rs.getInt(1);
+				rs.close();
+				
+				if(count == 0) // ID가 없는 상태
+				{
+					result="NOID";
+				}
+				else // ID가 존재하는 상태
+				{
+					sql="SELECT pwd FROM member "
+					   +"WHERE id=?";
+					ps=conn.prepareStatement(sql);
+					ps.setString(1, id);
+					
+					rs=ps.executeQuery();
+					rs.next();
+					String db_pwd=rs.getString(1);
+					rs.close();
+					
+					if(db_pwd.equals(pwd))// Login
+					{
+						result="OK";
+					}
+					else // 비밀번호가 틀린상태
+					{
+						result="NOPWD";
+					}
+					
+				}
+				
+			}catch(Exception ex)
+			{
+				System.out.println(ex.getMessage());
+			}
+			finally
+			{
+				disConnection();
+			}
+			return result;
+		}
+		
+		public void replyDelete(int no)
+		{
+			try
+			{
+				getConnection();
+				String sql="DELETE FROM daum_reply "
+						  +"WHERE no=?";
+				// 전송 
+				ps=conn.prepareStatement(sql);
+				ps.setInt(1, no);
+				
+				ps.executeUpdate();
+			}catch(Exception ex) 
+			{
+				ex.printStackTrace();
+			}
+			finally
+			{
+				disConnection();
+			}
+		}
 }
 
 
